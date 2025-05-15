@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Page</title>
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    body{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 30px;
+        background-color:darkblue;
+    }
+    .parent{
+        padding: 30px;
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: white;
+        border-radius: 20px;
+        color:darkblue;
+        gap: 20px;
+    }
+    h3{
+        font-size: 30px;
+    }
+    input{
+        border: 2px solid darkblue;
+        padding: 15px;
+        width: 80%;
+        border-radius: 20px;
+    }
+   #terms{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 100px;
+   }
+   #box{
+    width: 20px;
+    outline: none;
+   }
+   #agree{
+    width: 80%;
+   }
+   #btn{
+    background-color: white;
+    width: 80px;
+    height: 30px;
+    background-color:darkblue;
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-weight: 500;
+   }
+   input::placeholder{
+    color: darkblue;
+   }
+   input:focus-within {
+    outline: 1px solid darkblue;
+    color: darkblue;
+   }
+   table,
+    td,
+    th,
+     tr,
+    thead,
+    tbody {
+        margin-top: 3%;
+     border-collapse: collapse;
+     padding: 10px;
+     border: 2px solid white;
+     color: white;
+    }
+</style>
+<body>
+   <div class="parent">
+         <h3>SIGNUP PAGE</h3>
+        <input id="name" placeholder="Fullname" type="text">
+        <input id="mail" placeholder="Email" type="text">
+        <input id="Password" placeholder="Password" type="text">
+        <input  id="confPassword" placeholder="Confirm Password" type="text">
+        <div id="terms">
+            <input id="box" type="checkbox" name="" id="">
+            <span id="agree">Agree to terms and conditions</span>
+        </div>
+        <button  id="btn" onclick="signUp()" >SignUp</button>
+    </div> 
+    <table>
+        <thead>
+            <th>S/N</th>
+            <th>Username</th>
+            <th>Email</th>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</body>
+</html>
+<script>
+    let userDatabase = JSON.parse(localStorage.getItem('userInfo')) || []
+    function signUp() {
+
+        setTimeout(() => {
+            let name  = document.getElementById("name").value.trim();
+            let mail = document.getElementById("mail").value.trim();
+            let password = document.getElementById("Password").value.trim();
+            let confPassword =  document.getElementById("confPassword").value.trim();
+            let box = document.getElementById("box").checked
+            let tbody = document.getElementById("tbody")
+
+            // let userNameExist = userInfo.some(user => user.name === name)
+            // let userEmailExist = userInfo.some(user => user.mail === mail)
+            if (!name || !mail || !password || !confPassword) {
+                alert("All fields are mandatory.")
+                return
+            }
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(mail)) {
+                alert("Please enter a valid Email Address.")
+                return
+            }
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters.")
+            }
+            if (password !== confPassword) {
+                alert("Passwords are not the same")
+                return
+            }
+            if (!box) {
+                alert("You must agree to the Terms and Conditions.")
+                return
+            }
+            alert('Logged in successful')
+
+            // if (userNameExist || userEmailExist) {
+            //     alert("Username exist.")
+            //     return
+            // }
+            let user = {
+                name: name,
+                email: mail
+            }
+            userDatabase.push(user)
+            localStorage.setItem('userInfo', JSON.stringify(userDatabase))
+            tbody.innerHTML = ''
+            display()
+        }, 1000);
+    }
+
+    function display() {
+        tbody.innerHTML = ''
+        for (let i = 1; i < userDatabase.length; i++) {
+            tbody.innerHTML += `
+                <tr>
+                    <td> ${i} </td>
+                    <td> ${userDatabase[i].name}</td>
+                    <td> ${userDatabase[i].email}</td>
+                </tr>
+            `
+        }
+    }
+</script>
