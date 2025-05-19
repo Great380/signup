@@ -21,8 +21,8 @@
         background-color:darkblue;
     }
     .parent{
-        padding: 30px;
-        width: 40%;
+        padding: 30px 100px;
+        /* width: 40%; */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -37,66 +37,64 @@
     input{
         border: 2px solid darkblue;
         padding: 15px;
-        width: 80%;
+        width: 120%;
         border-radius: 20px;
     }
-   #terms{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding-left: 100px;
-   }
-   #box{
-    width: 20px;
-    outline: none;
-   }
-   #agree{
-    width: 80%;
-   }
-   #btn{
-    background-color: white;
-    width: 80px;
-    height: 30px;
-    background-color:darkblue;
-    border: none;
-    border-radius: 16px;
-    color: white;
-    font-weight: 500;
-   }
-   input::placeholder{
-    color: darkblue;
-   }
-   input:focus-within {
-    outline: 1px solid darkblue;
-    color: darkblue;
-   }
-   table,
+    input::placeholder{
+        color: darkblue;
+    }
+    input:focus-within {
+        outline: 1px solid darkblue;
+        color: darkblue;
+    }
+    #terms{
+        display: flex;
+        gap: 5px;
+        padding: 10px;
+    }
+    #box{
+        width: 15px;
+        outline: none;
+    }
+    #btn{
+        background-color: white;
+        padding: 10px 20px;
+        background-color:darkblue;
+        border: none;
+        border-radius: 16px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    #btn:hover{
+        background-color: rgba(2, 2, 162, 0.935);
+    }
+    table,
     td,
     th,
-     tr,
+    tr,
     thead,
-    tbody {
+    tbody{
         margin-top: 3%;
-     border-collapse: collapse;
-     padding: 10px;
-     border: 2px solid white;
-     color: white;
+        border-collapse: collapse;
+        padding: 10px;
+        border: 2px solid white;
+        color: white;
     }
 </style>
 <body>
-   <div class="parent">
-         <h3>SIGNUP PAGE</h3>
+   <form class="parent">
+         <h3>SIGNUP</h3>
         <input id="name" placeholder="Fullname" type="text">
-        <input id="mail" placeholder="Email" type="text">
+        <input id="mail" placeholder="Email" type="email">
         <input id="Password" placeholder="Password" type="text">
         <input  id="confPassword" placeholder="Confirm Password" type="text">
         <div id="terms">
             <input id="box" type="checkbox" name="" id="">
             <span id="agree">Agree to terms and conditions</span>
         </div>
-        <button  id="btn" onclick="signUp()" >SignUp</button>
-    </div> 
+        <button type="button"  id="btn" onclick="signUp(event)" >SignUp</button>
+    </form> 
     <table>
         <thead>
             <th>S/N</th>
@@ -109,53 +107,54 @@
 </html>
 <script>
     let userDatabase = JSON.parse(localStorage.getItem('userInfo')) || []
-    function signUp() {
-
-        setTimeout(() => {
-            let name  = document.getElementById("name").value.trim();
-            let mail = document.getElementById("mail").value.trim();
-            let password = document.getElementById("Password").value.trim();
-            let confPassword =  document.getElementById("confPassword").value.trim();
-            let box = document.getElementById("box").checked
-            let tbody = document.getElementById("tbody")
-
-            // let userNameExist = userInfo.some(user => user.name === name)
-            // let userEmailExist = userInfo.some(user => user.mail === mail)
-            if (!name || !mail || !password || !confPassword) {
-                alert("All fields are mandatory.")
-                return
-            }
-            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(mail)) {
-                alert("Please enter a valid Email Address.")
-                return
-            }
-            if (password.length < 8) {
-                alert("Password must be at least 8 characters.")
-            }
-            if (password !== confPassword) {
-                alert("Passwords are not the same")
-                return
-            }
-            if (!box) {
-                alert("You must agree to the Terms and Conditions.")
-                return
-            }
-            alert('Logged in successful')
-
-            // if (userNameExist || userEmailExist) {
-            //     alert("Username exist.")
-            //     return
-            // }
-            let user = {
-                name: name,
-                email: mail
-            }
-            userDatabase.push(user)
-            localStorage.setItem('userInfo', JSON.stringify(userDatabase))
-            tbody.innerHTML = ''
-            display()
-        }, 1000);
+    function signUp(e) {
+        e.preventDefault()
+        let name  = document.getElementById("name").value.trim();
+        let mail = document.getElementById("mail").value.trim();
+        let password = document.getElementById("Password").value.trim();
+        let confPassword =  document.getElementById("confPassword").value.trim();
+        let box = document.getElementById("box").checked
+        let tbody = document.getElementById("tbody")
+        if (!name || !mail || !password || !confPassword) {
+            alert("All fields are mandatory.")
+            return
+        }
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(mail)) {
+            alert("Please enter a valid Email Address.")
+            return
+        }
+        if (password.length < 8) {
+            alert("Password must be at least 8 characters.")
+            return
+        }
+        if (password !== confPassword) {
+            alert("Passwords are not the same")
+            return
+        }
+        if (!box) {
+            alert("You must agree to the Terms and Conditions.")
+            return
+        }
+        let clone = userDatabase.find(user => user.email === mail)
+        if (clone) {
+            alert("Email has already been used.")
+            return
+        }
+        let clones = userDatabase.find(user => user.name === name)
+            alert("Name has already been used.")
+            return
+        alert('Logged in successful')
+        let user = {
+            name: name,
+            email: mail,
+            password: password
+        }
+        userDatabase.push(user)
+        localStorage.setItem('userInfo', JSON.stringify(userDatabase))
+        tbody.innerHTML = ''
+        display()
+        setTimeout(() => { window.location.href = "LOGIN.html" }, 2000);
     }
 
     function display() {
@@ -170,4 +169,5 @@
             `
         }
     }
+    display()
 </script>
