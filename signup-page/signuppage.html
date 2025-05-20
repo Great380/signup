@@ -22,7 +22,6 @@
     }
     .parent{
         padding: 30px 100px;
-        /* width: 40%; */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -142,8 +141,10 @@
             return
         }
         let clones = userDatabase.find(user => user.name === name)
-            alert("Name has already been used.")
-            return
+            if (clones) {
+                alert("Name has already been used.")
+                return
+            }
         alert('Logged in successful')
         let user = {
             name: name,
