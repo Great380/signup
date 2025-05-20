@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <style>
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    body{
+        background-color: darkblue;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* justify-content: center; */
+        height: 100vh;
+    }
+    .container{
+        background-color: white;
+        color: darkblue;
+        padding: 50px 20px;
+        border-radius: 18px;
+    }
+    input{
+        border: 2px solid darkblue;
+        padding: 8px;
+        border-radius: 20px;
+    }
+    input::placeholder{
+        color: darkblue;
+    }
+    input:focus-within{
+        outline: 1px solid darkblue;
+        color: darkblue;
+    }
+    #btn{
+        background-color: darkblue;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+    #btn:hover{
+        background-color: rgba(2, 2, 162, 0.935);
+    }
+    #btn:focus-within{
+        background-color: rgba(2, 2, 162, 0.935);
+    }
+    #details{
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+  </style>
+</head>
+<body>
+    <h2>Welcome</h2>
+    <form class="container" onsubmit="post(event)">
+        <input id="title" type="text">
+        <input id="description" type="text">
+        <input type="file" id="filePicker" onchange="pickPicture()" >
+        <img src="" id="image" style="display: none;" width="100" height="100" alt="">
+        <button id="btn" onclick="post(event)">Post</button>
+        <div id="details"></div>
+    </form>
+</body>
+</html>
+<script>
+    const userDatabase = JSON.parse(localStorage.getItem("details")) || []
+    let detail = document.getElementById("details")
+    let image = document.getElementById("image");
+    function post(e) {
+        e.preventDefault()
+        let users = JSON.parse(localStorage.getItem('logInUser'));
+        let Title = document.getElementById("title");
+        let title = Title.value.trim();
+        let Description = document.getElementById("description");
+        let description = Description.value.trim();
+        if (!title || !description || !image.src === "") {
+            alert("All fields are mandatory.")
+            return
+        }
+        let obj = {
+            image: image.src,
+            like: false,
+            title: title,
+            description: description
+        };
+        userDatabase.push(obj);
+        localStorage.setItem("details", JSON.stringify(userDatabase));
+
+        image.src = '';
+        document.getElementById("image").style.display = "none";
+        document.getElementById("filePicker").value= '';
+        Title.value = '';
+        Description.value = '';
+
+        console.log(userDatabase);
+        detail.innerHTML = '';
+        display();
+    }
+    function display() {
+        detail.innerHTML = '';
+        for (let i = 0; i < userDatabase.length; i++) {
+            let post = userDatabase[i]
+            let liked = post.like ? "Unlike" : "Like"
+            detail.innerHTML += `
+            <div class="post">
+                <img src="${post.image || ''}" alt="Image">
+                <p><b>Title:</b> ${post.title}</p>
+                <P><b>Description:</b> ${post.description}</p>
+                <button onclick="like(${i})" style ="width: 60px; color: ${post.like ? 'blue' : 'red'}">${liked}</button>
+            </div>`
+        }
+    }
+
+    function like(i) {
+        userDatabase[i].like = !userDatabase[i].like;
+        localStorage.setItem("details", JSON.stringify(userDatabase));
+        display();
+    }
+
+    function pickPicture() {
+        let inputFile = document.getElementById("filePicker").files[0]
+        let reader = new FileReader()
+        if (inputFile) {
+            reader.readAsDataURL(inputFile);
+        }
+        reader.addEventListener('load', (ev) => {
+            let result = ev.target.result
+            image.src = result
+            image.style.display = "block"
+            console.log(result);
+        })
+    }
+    display()
+    console.log(JSON.parse(localStorage.getItem('logInUser')));
+</script>
